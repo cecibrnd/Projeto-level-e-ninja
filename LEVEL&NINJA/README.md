@@ -1,4 +1,4 @@
-# LEVEL Board — Base organizada
+# LEVEL & NINJA
 
 Sistema web para gerenciamento do acervo LEVEL e NINJA.
 
