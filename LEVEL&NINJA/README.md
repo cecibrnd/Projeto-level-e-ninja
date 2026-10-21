@@ -28,7 +28,7 @@ LEVEL_Board/
 2. Ative o ambiente virtual:
 
 ```powershell
-.\venv\Scripts\Activate.ps1
+.\venv\Scripts\activate.bat
 ```
 
 3. Instale as dependências, se necessário:
