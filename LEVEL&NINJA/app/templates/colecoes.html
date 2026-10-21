@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Coleções | LEVEL Board{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Coleções</h1>
+    <p class="mb-0 text-gray-600">Organize o acervo por coleção.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-primary shadow h-100">
+            <div class="card-body">
+                <h5 class="font-weight-bold text-gray-800">LEVEL</h5>
+                <p class="text-gray-700">Coleção principal do acervo LEVEL. Consulte e gerencie os itens vinculados.</p>
+                <span class="badge badge-primary">Coleção ativa</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-danger shadow h-100">
+            <div class="card-body">
+                <h5 class="font-weight-bold text-gray-800">NINJA</h5>
+                <p class="text-gray-700">Coleção NINJA integrada ao sistema, com a mesma estrutura de consulta e gerenciamento.</p>
+                <span class="badge badge-danger">Coleção ativa</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-success shadow h-100">
+            <div class="card-body">
+                <h5 class="font-weight-bold text-gray-800">Nova coleção</h5>
+                <p class="text-gray-700">A arquitetura foi pensada para permitir novas coleções sem refazer a estrutura do sistema.</p>
+                <span class="badge badge-success">Expansível</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

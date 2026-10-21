@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Cadastrar item · LEVEL Board{% endblock %}
+
+{# Macro: desenha label + campo + erros no padrão do Bootstrap #}
+{% macro campo(f, col='col-12') %}
+    <div class="form-group {{ col }}">
+        {{ f.label(class_='font-weight-bold small') }}
+        {{ f(**kwargs) }}
+        {% for erro in f.errors %}<div class="invalid-feedback d-block">{{ erro }}</div>{% endfor %}
+    </div>
+{% endmacro %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Cadastrar item</h1>
+        <p class="mb-0 text-gray-600">Preencha as informações para adicionar um novo material ao acervo.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('acervo') }}"><i class="fas fa-arrow-left fa-sm"></i> Voltar</a>
+</div>
+
+{% if not form.colecao_id.choices %}
+<div class="alert alert-warning">
+    Nenhuma coleção ativa encontrada. Cadastre ou ative uma coleção no banco antes de cadastrar itens.
+</div>
+{% endif %}
+
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">1. Identificação</h6></div>
+        <div class="card-body">
+            <div class="form-row">
+                {{ campo(form.nome, 'col-md-6', class_='form-control', placeholder='Ex.: Kit de Robótica') }}
+                {{ campo(form.colecao_id, 'col-md-6', class_='custom-select') }}
+                {{ campo(form.categoria, 'col-md-6', class_='form-control', placeholder='Ex.: Jogos, tecnologia, livro...') }}
+                {{ campo(form.tipo, 'col-md-6', class_='form-control', placeholder='Ex.: Jogo de tabuleiro') }}
+                {{ campo(form.codigo, 'col-md-6', class_='form-control', placeholder='SKU ou QR Code') }}
+                {{ campo(form.origem_doador, 'col-md-6', class_='form-control', placeholder='Pessoa, setor ou instituição') }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-success">2. Descrição e observações</h6></div>
+        <div class="card-body">
+            {{ campo(form.descricao, class_='form-control', rows=5, placeholder='Descreva o item...') }}
+            {{ campo(form.observacoes, class_='form-control', rows=4, placeholder='Conservação, localização, cuidados...') }}
+            {{ campo(form.imagem, class_='form-control', placeholder='URL ou caminho da imagem') }}
+            <div class="custom-control custom-checkbox">
+                {{ form.disponivel(class_='custom-control-input') }}
+                <label class="custom-control-label" for="disponivel">Item disponível para empréstimo</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-right mb-4">
+        <a class="btn btn-outline-secondary" href="{{ url_for('acervo') }}">Cancelar</a>
+        {{ form.submit(class_='btn btn-success') }}
+    </div>
+</form>
+{% endblock %}

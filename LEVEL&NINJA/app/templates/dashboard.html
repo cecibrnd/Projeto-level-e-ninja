@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | LEVEL Board{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <p class="mb-0 text-gray-600">Acompanhe o acervo e as movimentações do sistema.</p>
+    </div>
+    <a href="{{ url_for('cadastrar_item') }}" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Novo item
+    </a>
+</div>
+
+<div class="row">
+    {% set cards = [
+        ('Itens no acervo', dados.itens, 'primary', 'fa-boxes'),
+        ('Disponíveis', dados.disponiveis, 'success', 'fa-check-circle'),
+        ('Em empréstimo', dados.emprestimos_ativos, 'warning', 'fa-exchange-alt'),
+        ('Atrasados', dados.emprestimos_atrasados, 'danger', 'fa-exclamation-triangle'),
+    ] %}
+    {% for titulo, valor, cor, icone in cards %}
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-{{ cor }} shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-{{ cor }} text-uppercase mb-1">{{ titulo }}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ valor|default(0) }}</div>
+                    </div>
+                    <div class="col-auto"><i class="fas {{ icone }} fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Empréstimos recentes</h6>
+            </div>
+            <div class="card-body">
+                {% if recentes %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead><tr><th>Item</th><th>Solicitante</th><th>Prevista</th><th>Status</th></tr></thead>
+                        <tbody>
+                        {% for e in recentes %}
+                            <tr>
+                                <td>{{ e.item.nome }}</td>
+                                <td>{{ e.solicitante.nome }}</td>
+                                <td>{{ e.data_prevista_devolucao.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    {% if e.status == 'devolvido' %}<span class="badge badge-success">Devolvido</span>
+                                    {% elif e.data_prevista_devolucao < today %}<span class="badge badge-danger">Atrasado</span>
+                                    {% else %}<span class="badge badge-primary">Ativo</span>{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-gray-600 mb-0">Nenhum empréstimo registrado ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Acesso rápido</h6></div>
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action" href="{{ url_for('acervo') }}"><i class="fas fa-boxes fa-fw mr-2 text-gray-500"></i>Consultar acervo</a>
+                <a class="list-group-item list-group-item-action" href="{{ url_for('cadastrar_item') }}"><i class="fas fa-plus-circle fa-fw mr-2 text-gray-500"></i>Cadastrar item</a>
+                <a class="list-group-item list-group-item-action" href="{{ url_for('emprestimos') }}"><i class="fas fa-exchange-alt fa-fw mr-2 text-gray-500"></i>Empréstimos</a>
+                <a class="list-group-item list-group-item-action" href="{{ url_for('colecoes') }}"><i class="fas fa-layer-group fa-fw mr-2 text-gray-500"></i>Coleções</a>
+            </div>
+        </div>
+        <div class="card shadow">
+            <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Sobre o sistema</h6></div>
+            <div class="card-body small text-gray-700">
+                O LEVEL Board centraliza o gerenciamento do acervo, facilitando o cadastro,
+                a consulta dos itens e o controle de empréstimos e devoluções.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

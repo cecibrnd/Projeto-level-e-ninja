@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Usuários · LEVEL Board{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Usuários</h1>
+        <p class="mb-0 text-gray-600">Controle dos usuários e níveis de acesso ao sistema.</p>
+    </div>
+    <button class="btn btn-primary shadow-sm" onclick="alert('Cadastro de usuários será implementado na próxima etapa.')">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Novo usuário
+    </button>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Equipe cadastrada</h6></div>
+    <div class="card-body">
+        <div class="row">
+            {% for u in usuarios %}
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="d-flex align-items-center border rounded p-3">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-3 font-weight-bold" style="width:48px;height:48px">
+                        {{ u.nome[:2]|upper }}
+                    </div>
+                    <div>
+                        <div class="font-weight-bold text-gray-800">{{ u.nome }}</div>
+                        <div class="small text-gray-600">{{ u.email }}</div>
+                        <span class="badge badge-info">{{ u.nivel|capitalize }}</span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-4">
+                <i class="fas fa-user-cog fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-800">Nenhum usuário cadastrado</h5>
+                <p class="text-gray-600 mb-0">Os usuários aparecerão aqui quando forem cadastrados.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-primary shadow h-100"><div class="card-body">
+            <strong class="text-primary">Nível 1 · Professor Responsável</strong>
+            <p class="small mb-0 mt-2 text-gray-700">Acesso total, incluindo itens, usuários, relatórios e aprovações.</p>
+        </div></div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-success shadow h-100"><div class="card-body">
+            <strong class="text-success">Nível 2 · Bolsistas</strong>
+            <p class="small mb-0 mt-2 text-gray-700">Acesso operacional para cadastro, edição, empréstimos e devoluções.</p>
+        </div></div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-danger shadow h-100"><div class="card-body">
+            <strong class="text-danger">Nível 3 · Voluntários</strong>
+            <p class="small mb-0 mt-2 text-gray-700">Consulta e pré-cadastro de empréstimos, sujeitos à validação.</p>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

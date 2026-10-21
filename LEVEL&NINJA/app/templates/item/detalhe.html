@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.nome }} · LEVEL Board{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">{{ item.nome }}</h1>
+        <p class="mb-0 text-gray-600">{{ item.colecao.nome }} · {{ item.categoria or 'Sem categoria' }}</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('acervo') }}"><i class="fas fa-arrow-left fa-sm"></i> Voltar ao acervo</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-5 mb-4">
+        <div class="card shadow overflow-hidden">
+            <div class="item-cover {% if item.colecao.nome == 'NINJA' %}bg-gradient-success{% else %}bg-gradient-primary{% endif %}" style="height:140px">
+                <span>{{ item.colecao.nome }}</span>
+                <strong>{{ item.nome[:1]|upper }}</strong>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge {% if item.disponivel %}badge-success{% else %}badge-danger{% endif %}">
+                        {{ 'Disponível' if item.disponivel else 'Indisponível' }}
+                    </span>
+                    <small class="text-gray-600">Código: {{ item.codigo or '—' }}</small>
+                </div>
+                <p class="text-gray-700">{{ item.descricao or 'Nenhuma descrição cadastrada.' }}</p>
+                <dl class="mb-0">
+                    <dt class="small text-gray-600">Categoria</dt><dd>{{ item.categoria or '—' }}</dd>
+                    <dt class="small text-gray-600">Tipo</dt><dd>{{ item.tipo or '—' }}</dd>
+                    <dt class="small text-gray-600">Origem / Doador</dt><dd>{{ item.origem_doador or '—' }}</dd>
+                    <dt class="small text-gray-600">Observações</dt><dd class="mb-0">{{ item.observacoes or '—' }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Histórico de empréstimos</h6>
+            </div>
+            <div class="card-body">
+                {% if historico %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Solicitante</th><th>Retirada</th><th>Devolução prevista</th><th>Status</th></tr></thead>
+                        <tbody>
+                        {% for e in historico %}
+                            <tr>
+                                <td><strong>{{ e.solicitante.nome }}</strong></td>
+                                <td>{{ e.data_retirada.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ e.data_prevista_devolucao.strftime('%d/%m/%Y') }}</td>
+                                <td><span class="badge {% if e.status == 'devolvido' %}badge-success{% else %}badge-primary{% endif %}">{{ e.status|capitalize }}</span></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center text-gray-600 py-4 mb-0">Nenhum empréstimo registrado para este item.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
