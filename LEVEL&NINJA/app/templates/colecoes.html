@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Coleções | LEVEL Board{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Coleções</h1>
+        <p class="mb-0 text-gray-600">Organize o acervo por coleção.</p>
+    </div>
+    <a class="btn btn-primary shadow-sm" href="{{ url_for('nova_colecao') }}">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Nova coleção
+    </a>
+</div>
+
+<div class="row">
+    {% for c in colecoes %}
+    {% set cor = c.id|cor_colecao %}
+    <div class="col-lg-4 mb-4">
+        <div class="card border-left-{{ cor }} shadow h-100">
+            <div class="card-body">
+                <h5 class="font-weight-bold text-gray-800">{{ c.nome }}</h5>
+                <p class="text-gray-700">{{ c.descricao or 'Sem descrição.' }}</p>
+                <span class="badge badge-{{ cor }}">{{ 'Coleção ativa' if c.ativa else 'Inativa' }}</span>
+                <a class="small ml-2" href="{{ url_for('acervo', colecao=c.id) }}">{{ c.itens|length }} item(ns) →</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-layer-group fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-800">Nenhuma coleção criada</h5>
+                <p class="text-gray-600 mb-0">Clique em "Nova coleção" para começar.</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

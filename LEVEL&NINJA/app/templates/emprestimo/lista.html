@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Empréstimos · LEVEL Board{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Empréstimos</h1>
+        <p class="mb-0 text-gray-600">Controle de saídas, devoluções e itens em atraso.</p>
+    </div>
+    <a class="btn btn-primary shadow-sm" href="{{ url_for('acervo') }}"
+       title="Pesquise no acervo e marque os itens a emprestar">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Novo empréstimo
+    </a>
+</div>
+
+<div class="row">
+    {% set resumo = [
+        ('Ativos', emprestimos|selectattr('status','equalto','ativo')|list|length, 'primary'),
+        ('Devolvidos', emprestimos|selectattr('status','equalto','devolvido')|list|length, 'success'),
+        ('Registros', emprestimos|length, 'secondary'),
+    ] %}
+    {% for rotulo, valor, cor in resumo %}
+    <div class="col-md-4 mb-4">
+        <div class="card border-left-{{ cor }} shadow py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-{{ cor }} text-uppercase mb-1">{{ rotulo }}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ valor }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Todos os empréstimos</h6>
+    </div>
+    <div class="card-body">
+        {% if emprestimos %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-0">
+                <thead>
+                    <tr><th>Item</th><th>Solicitante</th><th>Operador</th><th>Retirada</th><th>Prevista</th><th>Status</th><th>Ação</th></tr>
+                </thead>
+                <tbody>
+                {% for e in emprestimos %}
+                    <tr>
+                        <td><strong>{{ e.item.nome }}</strong><br><small class="text-gray-600">{{ e.item.colecao.nome }}</small></td>
+                        <td>{{ e.solicitante.nome }}</td>
+                        <td>{{ e.operador.nome }}</td>
+                        <td>{{ e.data_retirada.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ e.data_prevista_devolucao.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if e.status == 'devolvido' %}<span class="badge badge-success">Devolvido</span>
+                            {% elif e.data_prevista_devolucao < today %}<span class="badge badge-danger">Atrasado</span>
+                            {% else %}<span class="badge badge-primary">Ativo</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if e.status == 'ativo' %}
+                            <form method="post" action="{{ url_for('devolver_emprestimo', emprestimo_id=e.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-success">Devolver</button>
+                            </form>
+                            {% else %}
+                            <span class="text-gray-600">Concluído</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-exchange-alt fa-3x text-gray-300 mb-3"></i>
+            <h5 class="text-gray-800">Nenhum empréstimo cadastrado</h5>
+            <p class="text-gray-600 mb-0">Os registros aparecerão aqui quando forem cadastrados.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

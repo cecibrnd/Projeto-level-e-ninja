@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Registrar empréstimo · LEVEL Board{% endblock %}
+
+{# Macro: desenha label + campo + erros no padrão do Bootstrap #}
+{% macro campo(f, col='col-12') %}
+    <div class="form-group {{ col }}">
+        {{ f.label(class_='font-weight-bold small') }}
+        {{ f(**kwargs) }}
+        {% for erro in f.errors %}<div class="invalid-feedback d-block">{{ erro }}</div>{% endfor %}
+    </div>
+{% endmacro %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Registrar empréstimo</h1>
+        <p class="mb-0 text-gray-600">Preencha os dados do empréstimo dos itens selecionados.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('acervo') }}"><i class="fas fa-arrow-left fa-sm"></i> Voltar ao acervo</a>
+</div>
+
+{% if sem_cadastros %}
+<div class="alert alert-warning">
+    Cadastre ao menos um solicitante e um usuário operador antes de registrar empréstimos.
+</div>
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Itens selecionados ({{ itens|length }})</h6></div>
+    <div class="card-body">
+        <ul class="mb-0">
+            {% for item in itens %}
+            <li>
+                <strong>{{ item.nome }}</strong>
+                <small class="text-gray-600">· {{ item.colecao.nome }}{% if item.codigo %} · #{{ item.codigo }}{% endif %}</small>
+                {% if not item.disponivel %}<span class="badge badge-danger ml-1">Emprestado</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<form method="post" action="{{ url_for('novo_emprestimo') }}">
+    {{ form.hidden_tag() }}
+    {% for item in itens %}
+    <input type="hidden" name="item_ids" value="{{ item.id }}">
+    {% endfor %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-success">Dados do empréstimo</h6></div>
+        <div class="card-body">
+            <div class="form-row">
+                {{ campo(form.solicitante_id, 'col-md-6', class_='custom-select') }}
+                {{ campo(form.operador_id, 'col-md-6', class_='custom-select') }}
+                {{ campo(form.data_emprestimo, 'col-md-4', class_='form-control') }}
+                {{ campo(form.data_devolucao, 'col-md-4', class_='form-control') }}
+                {{ campo(form.status, 'col-md-4', class_='custom-select') }}
+            </div>
+        </div>
+    </div>
+
+    <div class="text-right mb-4">
+        <a class="btn btn-outline-secondary" href="{{ url_for('acervo') }}">Cancelar</a>
+        {% if sem_cadastros %}
+        {{ form.submit(class_='btn btn-success', disabled=True) }}
+        {% else %}
+        {{ form.submit(class_='btn btn-success') }}
+        {% endif %}
+    </div>
+</form>
+{% endblock %}
