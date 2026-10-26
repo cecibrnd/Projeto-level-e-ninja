@@ -12,7 +12,7 @@ Sistema Web de Gerenciamento de Acervo e Controle de Empréstimos do LEVEL e do 
 Crie e ative um ambiente virtual:
 
 ```bash 
-  python -m venv .venv
+  python -m venv venv
   .\venv\Scripts\activate.bat
 ```
 
