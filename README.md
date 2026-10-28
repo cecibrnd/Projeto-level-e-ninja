@@ -25,7 +25,7 @@ pip install -r requirements.txt
 # Configuração do Banco
 Crie o banco de dados:
 ```bash
-  CREATE DATABASE `level`;
+  CREATE DATABASE level;
 ```
 # Executando o Projeto
  Com o ambiente virtual ativado, execute:
