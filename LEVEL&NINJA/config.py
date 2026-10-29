@@ -7,12 +7,12 @@ class Config:
 
     SECRET_KEY = os.getenv(
         "SECRET_KEY",
-        "chave-secreta-level-board",
+        "chave-secreta-level-ninja",
     )
 
     # Configurações do banco de dados.
     DB_USERNAME = os.getenv("DB_USERNAME", "root")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "labinfo")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "cecilssz0")
     DB_NAME = os.getenv("DB_NAME", "level")
 
     SQLALCHEMY_DATABASE_URI = (
@@ -22,3 +22,12 @@ class Config:
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Upload de imagens dos itens (máx. 5 MB).
+    UPLOAD_FOLDER = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "app",
+        "static",
+        "uploads",
+    )
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024

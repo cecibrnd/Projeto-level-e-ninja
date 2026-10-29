@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField
 from wtforms import (
     BooleanField,
+    IntegerField,
     SelectField,
     StringField,
     SubmitField,
     TextAreaField,
 )
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, NumberRange, Optional
 
 
 class ItemForm(FlaskForm):
@@ -50,7 +52,7 @@ class ItemForm(FlaskForm):
     )
 
     codigo = StringField(
-        "SKU / QR Code",
+        "SKU",
         validators=[
             Optional(),
             Length(max=80),
@@ -68,11 +70,23 @@ class ItemForm(FlaskForm):
         validators=[DataRequired()],
     )
 
-    imagem = StringField(
-        "Imagem (URL ou caminho)",
+    quantidade = IntegerField(
+        "Quantidade",
+        default=1,
+        validators=[
+            DataRequired(message="Informe a quantidade."),
+            NumberRange(min=1, message="A quantidade deve ser pelo menos 1."),
+        ],
+    )
+
+    imagem = FileField(
+        "Imagem do item",
         validators=[
             Optional(),
-            Length(max=255),
+            FileAllowed(
+                ["jpg", "jpeg", "png", "gif", "webp"],
+                "Envie uma imagem (jpg, png, gif ou webp).",
+            ),
         ],
     )
 

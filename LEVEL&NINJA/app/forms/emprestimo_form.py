@@ -1,21 +1,25 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, SelectField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import DateField, SelectField, StringField, SubmitField
+from wtforms.validators import DataRequired, Length
 
 
 class EmprestimoForm(FlaskForm):
     """Formulário da página de registrar empréstimo."""
 
-    solicitante_id = SelectField(
+    solicitante_nome = StringField(
         "Nome de quem pegou",
-        coerce=int,
-        validators=[DataRequired(message="Selecione quem pegou o item.")],
+        validators=[
+            DataRequired(message="Digite o nome de quem pegou o item."),
+            Length(max=120),
+        ],
     )
 
-    operador_id = SelectField(
+    operador_nome = StringField(
         "Nome de quem realizou o empréstimo",
-        coerce=int,
-        validators=[DataRequired(message="Selecione quem realizou o empréstimo.")],
+        validators=[
+            DataRequired(message="Digite o nome de quem realizou o empréstimo."),
+            Length(max=120),
+        ],
     )
 
     data_emprestimo = DateField(

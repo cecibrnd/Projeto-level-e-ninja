@@ -23,6 +23,16 @@ from app import models, routes  # noqa: E402, F401
 with app.app_context():
     db.create_all()
 
+    # Banco já existente: adiciona a coluna "quantidade" se ainda não houver.
+    from sqlalchemy import inspect, text
+
+    colunas = [c["name"] for c in inspect(db.engine).get_columns("itens")]
+    if "quantidade" not in colunas:
+        db.session.execute(
+            text("ALTER TABLE itens ADD COLUMN quantidade INT NOT NULL DEFAULT 1")
+        )
+        db.session.commit()
+
     # Se a tabela de coleções estiver vazia, cria as duas coleções padrão.
     # Sem isso, o campo "Coleção" do cadastro de item fica sem opções.
     if models.Colecao.query.count() == 0:

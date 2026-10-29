@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Cadastrar item · LEVEL Board{% endblock %}
+{% block title %}Cadastrar item · LEVEL &amp; NINJA{% endblock %}
 
 {# Macro: desenha label + campo + erros no padrão do Bootstrap #}
 {% macro campo(f, col='col-12') %}
@@ -25,7 +25,7 @@
 </div>
 {% endif %}
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
     <div class="card shadow mb-4">
@@ -36,7 +36,8 @@
                 {{ campo(form.colecao_id, 'col-md-6', class_='custom-select') }}
                 {{ campo(form.categoria, 'col-md-6', class_='form-control', placeholder='Ex.: Jogos, tecnologia, livro...') }}
                 {{ campo(form.tipo, 'col-md-6', class_='form-control', placeholder='Ex.: Jogo de tabuleiro') }}
-                {{ campo(form.codigo, 'col-md-6', class_='form-control', placeholder='SKU ou QR Code') }}
+                {{ campo(form.codigo, 'col-md-6', class_='form-control', placeholder='SKU') }}
+                {{ campo(form.quantidade, 'col-md-6', class_='form-control', min=1) }}
                 {{ campo(form.origem_doador, 'col-md-6', class_='form-control', placeholder='Pessoa, setor ou instituição') }}
             </div>
         </div>
@@ -47,7 +48,8 @@
         <div class="card-body">
             {{ campo(form.descricao, class_='form-control', rows=5, placeholder='Descreva o item...') }}
             {{ campo(form.observacoes, class_='form-control', rows=4, placeholder='Conservação, localização, cuidados...') }}
-            {{ campo(form.imagem, class_='form-control', placeholder='URL ou caminho da imagem') }}
+            {{ campo(form.imagem, class_='form-control-file', accept='image/*') }}
+            <small class="form-text text-muted mb-3">Escolha uma foto do computador ou celular (até 5 MB).</small>
             <div class="custom-control custom-checkbox">
                 {{ form.disponivel(class_='custom-control-input') }}
                 <label class="custom-control-label" for="disponivel">Item disponível para empréstimo</label>

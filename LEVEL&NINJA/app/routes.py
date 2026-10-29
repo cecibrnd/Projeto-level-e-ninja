@@ -1,4 +1,6 @@
+import os
 from datetime import date, timedelta
+from uuid import uuid4
 
 from flask import (
     flash,
@@ -22,6 +24,30 @@ from app.models import (
 from app.services.colecao_service import ColecaoService
 from app.services.emprestimo_service import EmprestimoService
 from app.services.item_service import ItemService
+
+
+def salvar_imagem(arquivo):
+    """Salva a imagem enviada em static/uploads e devolve o nome do arquivo."""
+    if not arquivo or not arquivo.filename:
+        return None
+
+    extensao = os.path.splitext(arquivo.filename)[1].lower()
+    nome_arquivo = f"{uuid4().hex}{extensao}"
+
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    arquivo.save(os.path.join(app.config["UPLOAD_FOLDER"], nome_arquivo))
+
+    return nome_arquivo
+
+
+@app.template_filter("imagem_url")
+def imagem_url(valor):
+    """Converte o valor salvo no banco em uma URL utilizável."""
+    if not valor:
+        return None
+    if valor.startswith(("http://", "https://")):
+        return valor
+    return url_for("static", filename=f"uploads/{valor}")
 
 
 @app.context_processor
@@ -127,6 +153,8 @@ def cadastrar_item():
     ]
 
     if form.validate_on_submit():
+        imagem_salva = salvar_imagem(form.imagem.data)
+
         dados = {
             "nome": form.nome.data.strip(),
             "descricao": form.descricao.data,
@@ -136,7 +164,8 @@ def cadastrar_item():
             "codigo": form.codigo.data or None,
             "observacoes": form.observacoes.data,
             "colecao_id": form.colecao_id.data,
-            "imagem": form.imagem.data,
+            "imagem": imagem_salva,
+            "quantidade": form.quantidade.data,
             "disponivel": form.disponivel.data,
         }
 
@@ -228,13 +257,6 @@ def novo_emprestimo():
     operadores = Usuario.query.order_by(Usuario.nome).all()
 
     form = EmprestimoForm()
-    form.solicitante_id.choices = [(0, "Selecione...")] + [
-        (s.id, f"{s.nome} ({s.tipo})") for s in solicitantes
-    ]
-    form.operador_id.choices = [(0, "Selecione...")] + [
-        (u.id, u.nome) for u in operadores
-    ]
-
     # Valores iniciais só na primeira abertura da página.
     if request.method == "GET":
         form.data_emprestimo.data = date.today()
@@ -245,8 +267,8 @@ def novo_emprestimo():
         try:
             itens_emprestados, solicitante = EmprestimoService.registrar(
                 [i.id for i in itens],
-                form.solicitante_id.data,
-                form.operador_id.data,
+                form.solicitante_nome.data,
+                form.operador_nome.data,
                 form.data_emprestimo.data,
                 form.data_devolucao.data,
                 form.status.data,
@@ -272,7 +294,8 @@ def novo_emprestimo():
         "emprestimo/novo.html",
         form=form,
         itens=itens,
-        sem_cadastros=not solicitantes or not operadores,
+        solicitantes=solicitantes,
+        operadores=operadores,
     )
 
 

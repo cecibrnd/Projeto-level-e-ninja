@@ -14,6 +14,7 @@ class Item(db.Model):
     origem_doador = db.Column(db.String(120))
     tipo = db.Column(db.String(80))
     codigo = db.Column(db.String(80), unique=True)
+    quantidade = db.Column(db.Integer, default=1, nullable=False)
     observacoes = db.Column(db.Text)
     disponivel = db.Column(db.Boolean, default=True, nullable=False)
 

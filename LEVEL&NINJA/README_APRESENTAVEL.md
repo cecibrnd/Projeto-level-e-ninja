@@ -1,4 +1,4 @@
-# LEVEL Board — Base Apresentável
+# LEVEL & NINJA — Base Apresentável
 
 Esta versão mantém o `venv` original do projeto e melhora a apresentação visual.
 

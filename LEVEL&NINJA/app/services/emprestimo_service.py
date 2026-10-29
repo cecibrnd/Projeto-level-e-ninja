@@ -1,4 +1,5 @@
 from datetime import date
+from uuid import uuid4
 
 from app import db
 from app.models import Emprestimo, Item, Solicitante, Usuario
@@ -10,10 +11,44 @@ class EmprestimoService:
     """Regras relacionadas aos empréstimos."""
 
     @staticmethod
+    def _solicitante_por_nome(nome):
+        """Acha o solicitante pelo nome (sem diferenciar maiúsculas) ou cria um novo."""
+        nome = nome.strip()
+        solicitante = Solicitante.query.filter(
+            db.func.lower(Solicitante.nome) == nome.lower()
+        ).first()
+
+        if solicitante is None:
+            solicitante = Solicitante(nome=nome, tipo="externo")
+            db.session.add(solicitante)
+            db.session.flush()
+
+        return solicitante
+
+    @staticmethod
+    def _operador_por_nome(nome):
+        """Acha o operador pelo nome (sem diferenciar maiúsculas) ou cria um novo."""
+        nome = nome.strip()
+        operador = Usuario.query.filter(
+            db.func.lower(Usuario.nome) == nome.lower()
+        ).first()
+
+        if operador is None:
+            # O e-mail é obrigatório e único no banco; gera um provisório.
+            operador = Usuario(
+                nome=nome,
+                email=f"{uuid4().hex[:12]}@sem-email.local",
+            )
+            db.session.add(operador)
+            db.session.flush()
+
+        return operador
+
+    @staticmethod
     def registrar(
         item_ids,
-        solicitante_id,
-        operador_id,
+        solicitante_nome,
+        operador_nome,
         data_retirada,
         data_prevista,
         status="ativo",
@@ -59,13 +94,8 @@ class EmprestimoService:
                 "data de devolução no futuro."
             )
 
-        solicitante = db.session.get(Solicitante, solicitante_id)
-        if solicitante is None:
-            raise ValueError("Solicitante não encontrado.")
-
-        operador = db.session.get(Usuario, operador_id)
-        if operador is None:
-            raise ValueError("Operador não encontrado.")
+        if not solicitante_nome.strip() or not operador_nome.strip():
+            raise ValueError("Informe os nomes de quem pegou e de quem realizou o empréstimo.")
 
         # with_for_update trava as linhas até o commit, evitando que duas
         # pessoas emprestem o mesmo item ao mesmo tempo.
@@ -87,6 +117,10 @@ class EmprestimoService:
                     + ", ".join(indisponiveis)
                     + "."
                 )
+
+        # Só chega aqui se tudo acima passou; assim ninguém é criado à toa.
+        solicitante = EmprestimoService._solicitante_por_nome(solicitante_nome)
+        operador = EmprestimoService._operador_por_nome(operador_nome)
 
         for item in itens:
             db.session.add(
